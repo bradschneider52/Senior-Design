@@ -5,6 +5,13 @@
  */
 package View;
 
+import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Ian
@@ -42,6 +49,11 @@ public class InitialScreen extends javax.swing.JFrame {
         jPanel1.add(jButton1);
 
         jButton2.setText("File 2");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton2);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
@@ -50,8 +62,43 @@ public class InitialScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        JFileChooser chooser = new JFileChooser();
+        String fileName;
+        Pattern pattern;
+        Matcher matcher;
+        do{
+        chooser.showDialog(null, "Select Your .dbc File");
+        chooser.setVisible(true);
+        File file1 = chooser.getSelectedFile();
+        fileName = file1.getName();
+        String fileType = "([^\\s]+(\\.(?i)(dbc))$)";
+        pattern = Pattern.compile(fileType);
+        matcher = pattern.matcher(fileName);
+        if(!matcher.matches()){
+            JOptionPane.showMessageDialog(new JFrame(), "Please verify you select a .dbc file.");
+        }
+        }while(!matcher.matches());
+        
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+         JFileChooser chooser = new JFileChooser();
+        String fileName;
+        Pattern pattern;
+        Matcher matcher;
+        do{
+        chooser.showDialog(null, "Select Your .dbc File");
+        chooser.setVisible(true);
+        File file2 = chooser.getSelectedFile();
+        fileName = file2.getName();
+        String fileType = "([^\\s]+(\\.(?i)(dbc))$)";
+        pattern = Pattern.compile(fileType);
+        matcher = pattern.matcher(fileName);
+        if(!matcher.matches()){
+            JOptionPane.showMessageDialog(new JFrame(), "Please verify you select a .dbc file.");
+        }
+        }while(!matcher.matches());
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
