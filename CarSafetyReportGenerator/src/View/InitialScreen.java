@@ -84,12 +84,16 @@ public class InitialScreen extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
          JFileChooser chooser = new JFileChooser();
         String fileName;
+        File file2;
+        int result;
         Pattern pattern;
         Matcher matcher;
         do{
         chooser.showDialog(null, "Select Your .dbc File");
         chooser.setVisible(true);
-        File file2 = chooser.getSelectedFile();
+        //Find a way to close dialogue box in case user would like to cancel file selection
+        result = chooser.showSaveDialog(this);
+        file2 = chooser.getSelectedFile();
         fileName = file2.getName();
         String fileType = "([^\\s]+(\\.(?i)(dbc))$)";
         pattern = Pattern.compile(fileType);
@@ -97,7 +101,7 @@ public class InitialScreen extends javax.swing.JFrame {
         if(!matcher.matches()){
             JOptionPane.showMessageDialog(new JFrame(), "Please verify you select a .dbc file.");
         }
-        }while(!matcher.matches());
+        }while((!matcher.matches()) || !(result == JFileChooser.CANCEL_OPTION));
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
