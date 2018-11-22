@@ -38,9 +38,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Kvaser\Canlib\dotnet\x64\fw40\canlibCLSNET.dll</HintPath>
     </Reference>
-    <Reference Include="kvadblibCLSNET, Version=8.25.608.1, Culture=neutral, PublicKeyToken=6ef18931d7bf9ad7, processorArchitecture=AMD64">
+    <Reference Include="kvadblibCLSNET, Version=8.25.608.1, Culture=neutral, PublicKeyToken=6ef18931d7bf9ad7, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Kvaser\Canlib\dotnet\win32\fw40\kvadblibCLSNET.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Kvaser\Canlib\dotnet\x64\fw40\kvadblibCLSNET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -88,6 +88,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

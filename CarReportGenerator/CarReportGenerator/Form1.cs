@@ -21,7 +21,9 @@ namespace CarReportGenerator
         public Form1()
         {
             InitializeComponent();
-            Canlib.canInitializeLibrary();
+            //Canlib.canInitializeLibrary();
+            
+            
         }
 
         OpenFileDialog ofd = new OpenFileDialog();
@@ -43,6 +45,7 @@ namespace CarReportGenerator
         {
             //test the dumpdatabase function 
             Kvadblib.Status status = this.dumpDatabase();
+            /*
             ofd.Filter = "dbc files|*.dbc"; //only allows dbc file extensions
             if (ofd.ShowDialog() == DialogResult.OK)
             {
@@ -52,14 +55,15 @@ namespace CarReportGenerator
                 //MessageBox.Show(sr.ReadToEnd());
                 sr.Close();
             }
+            */
         }
 
         private Kvadblib.Status dumpDatabase()
         {
             Kvadblib.Status status;
-            Kvadblib.Hnd dh = null;
-            Kvadblib.MessageHnd mh = null;
-            Kvadblib.SignalHnd sh = null;
+            Kvadblib.Hnd dh = new Kvadblib.Hnd();
+            Kvadblib.MessageHnd mh = new Kvadblib.MessageHnd();
+            Kvadblib.SignalHnd sh = new Kvadblib.SignalHnd();
             Kvadblib.DATABASE flags;
             Kvadblib.MESSAGE mflags;
 
