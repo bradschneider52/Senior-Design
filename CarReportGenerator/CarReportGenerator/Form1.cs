@@ -16,9 +16,9 @@ using Kvaser.Kvadblib;
 
 namespace CarReportGenerator
 {
-    public partial class Form1 : Form
+    public partial class View : Form
     {
-        public Form1()
+        public View()
         {
             InitializeComponent();
             //Canlib.canInitializeLibrary();
@@ -35,7 +35,7 @@ namespace CarReportGenerator
                 System.IO.StreamReader sr = new System.IO.StreamReader(ofd.FileName);
                 //Canlib.r
                 
-                richTextBox1.Text = sr.ReadToEnd().ToString();
+                tabControl1.Text = sr.ReadToEnd().ToString();
                 //MessageBox.Show(sr.ReadToEnd());
                 sr.Close();
             }
@@ -273,5 +273,27 @@ namespace CarReportGenerator
             Console.WriteLine("\n\n");
             return Kvadblib.Status.OK;
         }
+
+        private void importMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void exportMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        /*
+private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+{
+
+}
+
+private void tabPage1_Click(object sender, EventArgs e)
+{
+
+}
+*/
     }
 }
