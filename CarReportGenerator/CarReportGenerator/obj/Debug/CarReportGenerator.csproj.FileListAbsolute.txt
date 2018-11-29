@@ -10,3 +10,13 @@ C:\Users\Ian\Documents\Ian Taylor PSU\SeniorDesign\Senior-Design\CarReportGenera
 C:\Users\Ian\Documents\Ian Taylor PSU\SeniorDesign\Senior-Design\CarReportGenerator\CarReportGenerator\bin\Debug\canlibCLSNET.xml
 C:\Users\Ian\Documents\Ian Taylor PSU\SeniorDesign\Senior-Design\CarReportGenerator\CarReportGenerator\bin\Debug\kvadblibCLSNET.dll
 C:\Users\Ian\Documents\Ian Taylor PSU\SeniorDesign\Senior-Design\CarReportGenerator\CarReportGenerator\obj\Debug\CarReportGenerator.csprojResolveAssemblyReference.cache
+C:\Users\Ian\Documents\Ian Taylor PSU\SeniorDesign\Copy\Senior-Design\CarReportGenerator\CarReportGenerator\bin\Debug\CarReportGenerator.exe.config
+C:\Users\Ian\Documents\Ian Taylor PSU\SeniorDesign\Copy\Senior-Design\CarReportGenerator\CarReportGenerator\obj\Debug\CarReportGenerator.exe
+C:\Users\Ian\Documents\Ian Taylor PSU\SeniorDesign\Copy\Senior-Design\CarReportGenerator\CarReportGenerator\obj\Debug\CarReportGenerator.pdb
+C:\Users\Ian\Documents\Ian Taylor PSU\SeniorDesign\Copy\Senior-Design\CarReportGenerator\CarReportGenerator\bin\Debug\CarReportGenerator.exe
+C:\Users\Ian\Documents\Ian Taylor PSU\SeniorDesign\Copy\Senior-Design\CarReportGenerator\CarReportGenerator\bin\Debug\CarReportGenerator.pdb
+C:\Users\Ian\Documents\Ian Taylor PSU\SeniorDesign\Copy\Senior-Design\CarReportGenerator\CarReportGenerator\bin\Debug\canlibCLSNET.xml
+C:\Users\Ian\Documents\Ian Taylor PSU\SeniorDesign\Copy\Senior-Design\CarReportGenerator\CarReportGenerator\obj\Debug\CarReportGenerator.csprojResolveAssemblyReference.cache
+C:\Users\Ian\Documents\Ian Taylor PSU\SeniorDesign\Copy\Senior-Design\CarReportGenerator\CarReportGenerator\obj\Debug\CarReportGenerator.View.resources
+C:\Users\Ian\Documents\Ian Taylor PSU\SeniorDesign\Copy\Senior-Design\CarReportGenerator\CarReportGenerator\obj\Debug\CarReportGenerator.Properties.Resources.resources
+C:\Users\Ian\Documents\Ian Taylor PSU\SeniorDesign\Copy\Senior-Design\CarReportGenerator\CarReportGenerator\obj\Debug\CarReportGenerator.csproj.GenerateResource.Cache
