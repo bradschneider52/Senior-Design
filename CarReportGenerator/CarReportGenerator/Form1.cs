@@ -26,21 +26,26 @@ namespace CarReportGenerator
             
         }
         String path;
+        //String[] events1, events2, similarEvents;
+        List<string> events1 = new List<string>();
+        List<string> events2 = new List<string>();
+        List<string> similarEvents = new List<string>();
         OpenFileDialog ofd = new OpenFileDialog();
+
         private void button1_Click(object sender, EventArgs e)
         {
             ofd.Filter = "dbc files|*.dbc"; //only allows dbc file extensions
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                //System.IO.StreamReader sr = new System.IO.StreamReader(ofd.FileName);
-                //Canlib.r
                 path = ofd.FileName;
-                Kvadblib.Status status = this.dumpDatabase(path, richTextBox1);
-                Console.WriteLine(path);
-
-               //richTextBox1.Text = sr.ReadToEnd().ToString();
-                //MessageBox.Show(sr.ReadToEnd());
+                Kvadblib.Status status = this.dumpDatabase(path, richTextBox1, events1);
                 //sr.Close();
+            }
+
+            //if statement to see if you can compare events yet
+            if(events1.Any() && events2.Any())
+            {
+                getSimilarEvents();
             }
         }
         
@@ -48,23 +53,22 @@ namespace CarReportGenerator
 
         private void button2_Click(object sender, EventArgs e)
         {
-            //test the dumpdatabase function 
-            
-            
             ofd.Filter = "dbc files|*.dbc"; //only allows dbc file extensions
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 path = ofd.FileName;
-                Kvadblib.Status status = this.dumpDatabase(path, richTextBox2);
-               // System.IO.StreamReader sr = new System.IO.StreamReader(ofd.FileName);
-                //tabPage2.Text = sr.ReadToEnd().ToString();
-                //MessageBox.Show(sr.ReadToEnd());
-               // universal.Close();
+                Kvadblib.Status status = this.dumpDatabase(path, richTextBox2, events2);
             }
-            
+
+            //if statement to see if you can compare events yet
+            if (events1.Any() && events2.Any())
+            {
+                getSimilarEvents();
+            }
+
         }
 
-        private Kvadblib.Status dumpDatabase(String f,RichTextBox rt)
+        private Kvadblib.Status dumpDatabase(String f,RichTextBox rt, List<string> events)
         {
             Kvadblib.Status status;
             Kvadblib.Hnd dh = new Kvadblib.Hnd();
@@ -110,9 +114,6 @@ namespace CarReportGenerator
             //Go through all the messages in the database
             while(status == Kvadblib.Status.OK)
             {
-                //char[] msg_name = new char[100];
-                //char[] msg_qname = new char[200];
-                //char[] msg_comment = new char[200];
                 string msg_name;
                 string msg_qname;
                 string msg_comment;
@@ -124,12 +125,10 @@ namespace CarReportGenerator
                 msg_name = string.Empty;
                 msg_qname = string.Empty;
                 msg_comment = string.Empty;
-                //Array.Clear(msg_name, 0, 100);
-                //Array.Clear(msg_qname, 0, 100);
-                //Array.Clear(msg_comment, 0, 200);
 
                 //Get the properties for each message
                 status = Kvadblib.GetMsgName(mh, out msg_name);
+                events.Add(msg_name);
                 if (status != Kvadblib.Status.OK)
                 {
                     Console.WriteLine("kvadblib.GetMsgName failed: " + status + "\n");
@@ -196,11 +195,13 @@ namespace CarReportGenerator
 
                     //Get the properties for each signal
                     status = Kvadblib.GetSignalName(sh, out signal_name);
+                    //events.Add(signal_name);
                     if (status != Kvadblib.Status.OK)
                     {
                         Console.WriteLine("kvadblib.GetSignalName failed: " + status + "\n");
                         return status;
                     }
+                    events.Add(signal_name);
 
                     status = Kvadblib.GetSignalQualifiedName(sh, out signal_qname);
                     if (status != Kvadblib.Status.OK)
@@ -281,6 +282,22 @@ namespace CarReportGenerator
             Console.WriteLine("\n\n");
             return Kvadblib.Status.OK;
         }
+
+        private void getSimilarEvents()
+        {
+            comboBox1.Items.Clear();
+            foreach(string s1 in events1)
+            {
+                foreach(string s2 in events2)
+                {
+                    if (s1.Contains(s2) && s1 != "CHECKSUM" && s1 != "COUNTER")
+                    {
+                        comboBox1.Items.Add(s1);
+                    }//if
+                    
+                }//foreach
+            }//foreach
+        }//findSimilarNames
 
         private void importMenuItem_Click(object sender, EventArgs e)
         {
