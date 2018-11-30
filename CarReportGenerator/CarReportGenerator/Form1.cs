@@ -25,40 +25,46 @@ namespace CarReportGenerator
             
             
         }
-
+        String path;
         OpenFileDialog ofd = new OpenFileDialog();
         private void button1_Click(object sender, EventArgs e)
         {
             ofd.Filter = "dbc files|*.dbc"; //only allows dbc file extensions
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                System.IO.StreamReader sr = new System.IO.StreamReader(ofd.FileName);
+                //System.IO.StreamReader sr = new System.IO.StreamReader(ofd.FileName);
                 //Canlib.r
-                
-                tabControl1.Text = sr.ReadToEnd().ToString();
+                path = ofd.FileName;
+                Kvadblib.Status status = this.dumpDatabase(path, richTextBox1);
+                Console.WriteLine(path);
+
+               //richTextBox1.Text = sr.ReadToEnd().ToString();
                 //MessageBox.Show(sr.ReadToEnd());
-                sr.Close();
+                //sr.Close();
             }
         }
+        
+        
 
         private void button2_Click(object sender, EventArgs e)
         {
             //test the dumpdatabase function 
-            Kvadblib.Status status = this.dumpDatabase();
-            /*
+            
+            
             ofd.Filter = "dbc files|*.dbc"; //only allows dbc file extensions
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-
-                System.IO.StreamReader sr = new System.IO.StreamReader(ofd.FileName);
-                richTextBox2.Text = sr.ReadToEnd().ToString();
+                path = ofd.FileName;
+                Kvadblib.Status status = this.dumpDatabase(path, richTextBox2);
+               // System.IO.StreamReader sr = new System.IO.StreamReader(ofd.FileName);
+                //tabPage2.Text = sr.ReadToEnd().ToString();
                 //MessageBox.Show(sr.ReadToEnd());
-                sr.Close();
+               // universal.Close();
             }
-            */
+            
         }
 
-        private Kvadblib.Status dumpDatabase()
+        private Kvadblib.Status dumpDatabase(String f,RichTextBox rt)
         {
             Kvadblib.Status status;
             Kvadblib.Hnd dh = new Kvadblib.Hnd();
@@ -76,7 +82,8 @@ namespace CarReportGenerator
             }
 
             //Load the database file
-            status = Kvadblib.ReadFile(dh, "C:\\Users\\Ian\\Documents\\Ian Taylor PSU\\SeniorDesign\\Senior-Design\\Sample_dbc_Files\\acura_ilx_2016_can.dbc");
+            
+            status = Kvadblib.ReadFile(dh,path.ToString());
             if(status != Kvadblib.Status.OK)
             {
                 Console.WriteLine("Could not load the database file: " + status + "\n");
@@ -158,11 +165,11 @@ namespace CarReportGenerator
                 }
 
                 //Print the properties for each message
-                Console.WriteLine("MESSAGE:\n");
-                Console.WriteLine("         name = " + msg_name + "\n");
-                Console.WriteLine("         qname = " + msg_qname + "\n");
-                Console.WriteLine("         comment = " + msg_comment + "\n");
-                Console.WriteLine("         id = " + id + " dlc = " + dlc + "flags = " + flags + "\n");
+                rt.AppendText("MESSAGE:\n");
+                rt.AppendText("         name = " + msg_name + "\n");
+                rt.AppendText("         qname = " + msg_qname + "\n");
+                rt.AppendText("         comment = " + msg_comment + "\n");
+                rt.AppendText("         id = " + id + " dlc = " + dlc + "flags = " + flags + "\n");
 
                 //Go through all signals for this message
                 status = Kvadblib.GetFirstSignal(mh, out sh);
@@ -251,15 +258,16 @@ namespace CarReportGenerator
                         return status;
                     }
 
-                    Console.WriteLine("Signal: \n");
-                    Console.WriteLine("       name = " + signal_name + ", unit = " + signal_unit + "\n");
-                    Console.WriteLine("       qname = " + signal_qname + "\n");
-                    Console.WriteLine("       comment = " + signal_comment + "\n");
-                    Console.WriteLine("       encoding = " + sigEnc.ToString() + "\n");
-                    Console.WriteLine("       representation = " + sigType.ToString() + "\n");
-                    Console.WriteLine("       min value = " + minval.ToString("F2") + ", max value = " + maxval.ToString("F2") + "\n");
-                    Console.WriteLine("       scale factor = " + factor.ToString("F2") + ", offset = " + offset.ToString("F2") + "\n");
-                    Console.WriteLine("       startbit = " + startbit + ", length = " + length + "\n");
+                    rt.AppendText("Signal: \n");
+                    //Console.WriteLine();
+                    rt.AppendText("       name = " + signal_name + ", unit = " + signal_unit + "\n");
+                    rt.AppendText("       qname = " + signal_qname + "\n");
+                    rt.AppendText("       comment = " + signal_comment + "\n");
+                    rt.AppendText("       encoding = " + sigEnc.ToString() + "\n");
+                    rt.AppendText("       representation = " + sigType.ToString() + "\n");
+                    rt.AppendText("       min value = " + minval.ToString("F2") + ", max value = " + maxval.ToString("F2") + "\n");
+                    rt.AppendText("       scale factor = " + factor.ToString("F2") + ", offset = " + offset.ToString("F2") + "\n");
+                    rt.AppendText("       startbit = " + startbit + ", length = " + length + "\n");
                     status = Kvadblib.GetNextSignal(mh, out sh);
                 }
                 status = Kvadblib.GetNextMsg(dh, out mh);
@@ -280,6 +288,16 @@ namespace CarReportGenerator
         }
 
         private void exportMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
         {
 
         }
