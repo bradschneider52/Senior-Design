@@ -21,6 +21,7 @@ namespace CarReportGenerator
         public View()
         {
             InitializeComponent();
+            comboBox1.Items.Clear();
             //Canlib.canInitializeLibrary();
             
             
