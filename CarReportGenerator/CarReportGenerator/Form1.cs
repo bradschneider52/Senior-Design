@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using canlibCLSNET;
 using Kvaser.Kvadblib;
 
+using System.Threading;
+using System.Windows.Forms.DataVisualization.Charting;
 
 
 //using Kvaser;
@@ -18,6 +20,14 @@ namespace CarReportGenerator
 {
     public partial class View : Form
     {
+
+        private Thread graphthread;
+        private double[] signalArray = new double[30];
+        public byte[] can_data = new byte[1024];
+        public double F = 0;
+        public double minimum = 0;
+        public double maximum = 0;
+        public int Insert;
         public View()
         {
             InitializeComponent();
@@ -26,27 +36,25 @@ namespace CarReportGenerator
             
             
         }
-        String path;
         //String[] events1, events2, similarEvents;
-        List<string> events1 = new List<string>();
-        List<string> events2 = new List<string>();
-        List<string> similarEvents = new List<string>();
-        OpenFileDialog ofd = new OpenFileDialog();
+        //List<string> similarEvents = new List<string>();
 
+
+        // The graph at the bottom is experimental and doesnt sketch anything accurate yet
+
+
+        OpenFileDialog ofd = new OpenFileDialog();
+        public string filename;
         private void button1_Click(object sender, EventArgs e)
         {
+            richTextBox1.Clear();
             ofd.Filter = "dbc files|*.dbc"; //only allows dbc file extensions
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                path = ofd.FileName;
-                Kvadblib.Status status = this.dumpDatabase(path, richTextBox1, events1);
-                //sr.Close();
-            }
-
-            //if statement to see if you can compare events yet
-            if(events1.Any() && events2.Any())
-            {
-                getSimilarEvents();
+                filename = ofd.FileName;
+                ofd.Dispose();
+                Kvadblib.Status status = this.dumpDatabase(filename, richTextBox1);
+                
             }
         }
         
@@ -57,19 +65,14 @@ namespace CarReportGenerator
             ofd.Filter = "dbc files|*.dbc"; //only allows dbc file extensions
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                path = ofd.FileName;
-                Kvadblib.Status status = this.dumpDatabase(path, richTextBox2, events2);
-            }
+                filename = ofd.FileName;
+               Kvadblib.Status status = this.dumpDatabase(filename, richTextBox2);
 
-            //if statement to see if you can compare events yet
-            if (events1.Any() && events2.Any())
-            {
-                getSimilarEvents();
             }
 
         }
 
-        private Kvadblib.Status dumpDatabase(String f,RichTextBox rt, List<string> events)
+        private Kvadblib.Status dumpDatabase(String f, RichTextBox rt)
         {
             Kvadblib.Status status;
             Kvadblib.Hnd dh = new Kvadblib.Hnd();
@@ -80,16 +83,16 @@ namespace CarReportGenerator
 
             //Open a database handle
             status = Kvadblib.Open(out dh);
-            if(status != Kvadblib.Status.OK)
+            if (status != Kvadblib.Status.OK)
             {
                 Console.WriteLine("Could not create a database handle: " + status + "\n");
                 return status;
             }
 
             //Load the database file
-            
-            status = Kvadblib.ReadFile(dh,path.ToString());
-            if(status != Kvadblib.Status.OK)
+
+            status = Kvadblib.ReadFile(dh, f);
+            if (status != Kvadblib.Status.OK)
             {
                 Console.WriteLine("Could not load the database file: " + status + "\n");
                 return status;
@@ -113,7 +116,7 @@ namespace CarReportGenerator
             }
 
             //Go through all the messages in the database
-            while(status == Kvadblib.Status.OK)
+            while (status == Kvadblib.Status.OK)
             {
                 string msg_name;
                 string msg_qname;
@@ -129,7 +132,7 @@ namespace CarReportGenerator
 
                 //Get the properties for each message
                 status = Kvadblib.GetMsgName(mh, out msg_name);
-                events.Add(msg_name);
+                // TO BE FIXED events.Add(msg_name);
                 if (status != Kvadblib.Status.OK)
                 {
                     Console.WriteLine("kvadblib.GetMsgName failed: " + status + "\n");
@@ -165,30 +168,36 @@ namespace CarReportGenerator
                 }
 
                 //Print the properties for each message
-                rt.AppendText("MESSAGE:\n");
-                rt.AppendText("         name = " + msg_name + "\n");
-                rt.AppendText("         qname = " + msg_qname + "\n");
+               
+                rt.AppendText(" MESSAGE NAME = " + msg_name + "\n");
+                rt.AppendText("         qualifying message name = " + msg_qname + "\n");
                 rt.AppendText("         comment = " + msg_comment + "\n");
-                rt.AppendText("         id = " + id + " dlc = " + dlc + "flags = " + flags + "\n");
+                rt.AppendText("         message id = " + id + "\n ");
+                rt.AppendText("         data length code = " + dlc + "\n");
+                rt.AppendText("         flags = " + flags + "\n");
+                
 
                 //Go through all signals for this message
                 status = Kvadblib.GetFirstSignal(mh, out sh);
-                while(status == Kvadblib.Status.OK)
+                while (status == Kvadblib.Status.OK)
                 {
                     string signal_name;
+                    byte[] data = new byte[1024];
                     string signal_qname;
                     string signal_comment;
                     string signal_unit;
                     Kvadblib.SignalEncoding sigEnc;
                     Kvadblib.SignalType sigType;
                     int startbit = 0;
+                    int i = 1;
                     int length = 0;
                     double minval = 0;
                     double maxval = 0;
                     double factor = 0;
                     double offset = 0;
-
+                    
                     //Reset the strings
+                  
                     signal_name = string.Empty;
                     signal_qname = string.Empty;
                     signal_comment = string.Empty;
@@ -202,7 +211,34 @@ namespace CarReportGenerator
                         Console.WriteLine("kvadblib.GetSignalName failed: " + status + "\n");
                         return status;
                     }
-                    events.Add(signal_name);
+                    //events.Add(signal_name);
+
+
+
+
+                    //TEST CODE FROM KVASER
+
+                    status = Kvadblib.RetrieveSignalValuePhys(sh,out F,can_data);
+                    if (status != Kvadblib.Status.OK)
+                    {
+                        MessageBox.Show("Kvadlib.RetrieveSignalVlauePhys has failed" + status + "");
+                        return status;
+                    }
+
+                    //RETRIEVESIGNALVALUERAW
+
+                    status = Kvadblib.GetSignalValueFloat(sh, out F, data, dlc);
+                    if (status != Kvadblib.Status.OK)
+                    {
+                        MessageBox.Show("Retrieve message failed" + status + "");
+                        return status;
+                    }
+
+
+
+
+
+
 
                     status = Kvadblib.GetSignalQualifiedName(sh, out signal_qname);
                     if (status != Kvadblib.Status.OK)
@@ -243,6 +279,8 @@ namespace CarReportGenerator
                     if (status != Kvadblib.Status.OK)
                     {
                         Console.WriteLine("kvadblib.GetSignalValueLimits failed: " + status + "\n");
+                        minimum = minval;
+                        maximum = maxval;
                         return status;
                     }
 
@@ -260,16 +298,27 @@ namespace CarReportGenerator
                         return status;
                     }
 
-                    rt.AppendText("Signal: \n");
+                    //additional signal value integer
+                    status = Kvadblib.GetSignalValueInteger(sh,out i, data, dlc);
+                    Console.WriteLine("size of data=" + data.ToArray<byte>().Length);
+                    
                     //Console.WriteLine();
-                    rt.AppendText("       name = " + signal_name + ", unit = " + signal_unit + "\n");
-                    rt.AppendText("       qname = " + signal_qname + "\n");
-                    rt.AppendText("       comment = " + signal_comment + "\n");
-                    rt.AppendText("       encoding = " + sigEnc.ToString() + "\n");
-                    rt.AppendText("       representation = " + sigType.ToString() + "\n");
-                    rt.AppendText("       min value = " + minval.ToString("F2") + ", max value = " + maxval.ToString("F2") + "\n");
-                    rt.AppendText("       scale factor = " + factor.ToString("F2") + ", offset = " + offset.ToString("F2") + "\n");
-                    rt.AppendText("       startbit = " + startbit + ", length = " + length + "\n");
+                    rt.AppendText("             SIGNAL NAME = " + signal_name + "\n");
+                    rt.AppendText("                                 unit = " + signal_unit.ToString() + "\n");
+                    rt.AppendText("                                 signal qualifying name = " + signal_qname + "\n");
+                    rt.AppendText("                                 signal comment = " + signal_comment.ToString() + "\n");
+                    rt.AppendText("                                 signal encoding = " + sigEnc.ToString() + "\n");
+                    rt.AppendText("                                 signal representation = " + sigType.ToString() + "\n");
+                    rt.AppendText("                                 min sig value = " + minval.ToString() + "\n");
+                    rt.AppendText("                                 max sig value = " + maxval.ToString() + "\n");
+                    rt.AppendText("                                 signal scale factor = " + factor.ToString() +"\t"+ ", offset = " + offset.ToString() + "\n");
+                    rt.AppendText("                                 signal startbit = " + startbit +"\t"+ ", sig length = " + length + "\n");
+                    rt.AppendText("                                 signal value:\n");
+                   // rt.AppendText("                                 Physical signal value = " + F + "\n");
+                    rt.AppendText("                                 SIGNAL value float = " + F+"\n");
+                    var sb = new StringBuilder("                    signal integer data =");
+                    foreach (var b in data)
+                        sb.Append(b + ",");
                     status = Kvadblib.GetNextSignal(mh, out sh);
                 }
                 status = Kvadblib.GetNextMsg(dh, out mh);
@@ -284,21 +333,6 @@ namespace CarReportGenerator
             return Kvadblib.Status.OK;
         }
 
-        private void getSimilarEvents()
-        {
-            comboBox1.Items.Clear();
-            foreach(string s1 in events1)
-            {
-                foreach(string s2 in events2)
-                {
-                    if (s1.Contains(s2) && s1 != "CHECKSUM" && s1 != "COUNTER")
-                    {
-                        comboBox1.Items.Add(s1);
-                    }//if
-                    
-                }//foreach
-            }//foreach
-        }//findSimilarNames
 
         private void importMenuItem_Click(object sender, EventArgs e)
         {
@@ -318,6 +352,13 @@ namespace CarReportGenerator
         private void richTextBox1_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            chart1.Series["Series1"].Points.AddXY(10, 100);
+            chart1.Series["Series1"].ChartType = SeriesChartType.FastLine;
+            chart1.Series["Series1"].Color = Color.Red;
         }
 
         /*
